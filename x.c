@@ -452,13 +452,25 @@ mouseaction(XEvent *e, uint release)
 	/* ignore Button<N>mask for Button<N> - it's set on release */
 	uint state = e->xbutton.state & ~buttonmask(e->xbutton.button);
 
-	for (ms = mshortcuts; ms < mshortcuts + LEN(mshortcuts); ms++) {
-		if (ms->release == release &&
-		    ms->button == e->xbutton.button &&
-		    (match(ms->mod, state) ||  /* exact or forced */
-		     match(ms->mod, state & ~forcemousemod))) {
-			ms->func(&(ms->arg));
-			return 1;
+	if (tisaltscr()) {
+		for (ms = maltshortcuts; ms < maltshortcuts + LEN(maltshortcuts); ms++) {
+			if (ms->release == release &&
+					ms->button == e->xbutton.button &&
+					(match(ms->mod, state) ||  /* exact or forced */
+					 match(ms->mod, state & ~forcemousemod))) {
+				ms->func(&(ms->arg));
+				return 1;
+			}
+		}
+	} else {
+		for (ms = mshortcuts; ms < mshortcuts + LEN(mshortcuts); ms++) {
+			if (ms->release == release &&
+				ms->button == e->xbutton.button &&
+				(match(ms->mod, state) ||  /* exact or forced */
+				 match(ms->mod, state & ~forcemousemod))) {
+				ms->func(&(ms->arg));
+				return 1;
+			}
 		}
 	}
 
