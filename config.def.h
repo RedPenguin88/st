@@ -94,7 +94,7 @@ char *termname = "st-256color";
 unsigned int tabspaces = 8;
 
 /* bg opacity */
-float alpha = 0.8;
+float alpha = 0.8, alphaUnfocused = 0.6;
 
 /* Terminal colors (16 first used in escape sequence) */
 static const char *colorname[] = {
@@ -121,10 +121,10 @@ static const char *colorname[] = {
 	[255] = 0,
 
 	/* more colors can be added after 255 to use with DefaultXX */
-	"#dcd7ba",
-	"#dcd7ba",
-	"#dcd7ba", /* default foreground colour */
-	"#1f1f28", /* default background colour */
+	"#dcd7ba", /* cursor color */
+	"#dcd7ba", /* reverse cursor color */
+	"#1f1f28", /* default background color */
+	"#dcd7ba", /* default foreground color */
 };
 
 
@@ -132,8 +132,9 @@ static const char *colorname[] = {
  * Default colors (colorname index)
  * foreground, background, cursor, reverse cursor
  */
-unsigned int defaultfg = 258;
-unsigned int defaultbg = 259;
+unsigned int defaultbg = 0;
+unsigned int bg = 258, bgUnfocused = 258; 	/* Define custom focused and unfocused background colors here */
+unsigned int defaultfg = 259;
 unsigned int defaultcs = 256;
 static unsigned int defaultrcs = 257;
 
@@ -161,7 +162,7 @@ static unsigned int cols = 80;
 static unsigned int rows = 24;
 
 /*
- * Default colour and shape of the mouse cursor
+ * Default color and shape of the mouse cursor
  */
 static unsigned int mouseshape = XC_xterm;
 static unsigned int mousefg = 7;
