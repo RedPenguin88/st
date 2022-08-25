@@ -118,6 +118,7 @@ typedef struct {
 typedef struct {
 	int row;      /* nb row */
 	int col;      /* nb col */
+	int maxcol;
 	Line *line;   /* screen */
 	Line *alt;    /* alternate screen */
 	Line hist[HISTSIZE]; /* history buffer */
@@ -1043,7 +1044,7 @@ treset(void)
 	for (i = 0; i < 2; i++) {
 		tmoveto(0, 0);
 		tcursor(CURSOR_SAVE);
-		tclearregion(0, 0, term.col-1, term.row-1);
+		tclearregion(0, 0, term.maxcol-1, term.row-1);
 		tswapscreen();
 	}
 }
@@ -1121,7 +1122,7 @@ tscrolldown(int orig, int n)
 	LIMIT(n, 0, term.bot-orig+1);
 
 	tsetdirt(orig, term.bot-n);
-	tclearregion(0, term.bot-n+1, term.col-1, term.bot);
+	tclearregion(0, term.bot-n+1, term.maxcol-1, term.bot);
 
 	for (i = term.bot; i >= orig+n; i--) {
 		temp = term.line[i];
@@ -1154,7 +1155,7 @@ tscrollup(int orig, int n, int copyhist)
 			term.scr = MIN(term.scr + n, HISTSIZE-1);
 	}
 
-	tclearregion(0, orig, term.col-1, orig+n-1);
+	tclearregion(0, orig, term.maxcol-1, orig+n-1);
 	tsetdirt(orig+n, term.bot);
 
 	for (i = orig; i <= term.bot-n; i++) {
@@ -1327,8 +1328,8 @@ tclearregion(int x1, int y1, int x2, int y2)
 	if (y1 > y2)
 		temp = y1, y1 = y2, y2 = temp;
 
-	LIMIT(x1, 0, term.col-1);
-	LIMIT(x2, 0, term.col-1);
+	LIMIT(x1, 0, term.maxcol-1);
+	LIMIT(x2, 0, term.maxcol-1);
 	LIMIT(y1, 0, term.row-1);
 	LIMIT(y2, 0, term.row-1);
 
@@ -1659,8 +1660,7 @@ tsetmode(int priv, int set, const int *args, int narg)
 					break;
 				alt = IS_SET(MODE_ALTSCREEN);
 				if (alt) {
-					tclearregion(0, 0, term.col-1,
-							term.row-1);
+					tclearregion(0, 0, term.maxcol-1, term.row-1);
 				}
 				if (set ^ alt) /* set is always 1 or 0 */
 					tswapscreen();
@@ -1817,15 +1817,15 @@ csihandle(void)
 	case 'J': /* ED -- Clear screen */
 		switch (csiescseq.arg[0]) {
 		case 0: /* below */
-			tclearregion(term.c.x, term.c.y, term.col-1, term.c.y);
+			tclearregion(term.c.x, term.c.y, term.maxcol-1, term.c.y);
 			if (term.c.y < term.row-1) {
-				tclearregion(0, term.c.y+1, term.col-1,
+				tclearregion(0, term.c.y+1, term.maxcol-1,
 						term.row-1);
 			}
 			break;
 		case 1: /* above */
 			if (term.c.y > 1)
-				tclearregion(0, 0, term.col-1, term.c.y-1);
+				tclearregion(0, 0, term.maxcol-1, term.c.y-1);
 			tclearregion(0, term.c.y, term.c.x, term.c.y);
 			break;
 		case 2: /* screen */
@@ -1834,19 +1834,19 @@ csihandle(void)
 				int n, m, bot = term.bot;
 				term.bot = term.row-1;
 				for (n = term.row-1; n >= 0; n--) {
-					for (m = 0; m < term.col && term.line[n][m].u == ' ' && !term.line[n][m].mode; m++);
-					if (m < term.col) {
+					for (m = 0; m < term.maxcol && term.line[n][m].u == ' ' && !term.line[n][m].mode; m++);
+					if (m < term.maxcol) {
 						tscrollup(0, n+1, 1);
 						break;
 					}
 				}
 				if (n < term.row-1)
-					tclearregion(0, 0, term.col-1, term.row-n-2);
+					tclearregion(0, 0, term.maxcol-1, term.row-n-2);
 				term.bot = bot;
 				break;
 			}
 
-			tclearregion(0, 0, term.col-1, term.row-1);
+			tclearregion(0, 0, term.maxcol-1, term.row-1);
 			break;
 		case 3: /* scrollback */
 			if (!IS_SET(MODE_ALTSCREEN)) {
@@ -1855,7 +1855,7 @@ csihandle(void)
 				term.histn = 0;
 				Glyph g=(Glyph){.bg=term.c.attr.bg, .fg=term.c.attr.fg, .u=' ', .mode=0};
 				for (int i = 0; i < HISTSIZE; i++) {
-					for (int j = 0; j < term.col; j++)
+					for (int j = 0; j < term.maxcol; j++)
 						term.hist[i][j] = g;
 				}
 			}
@@ -1867,14 +1867,14 @@ csihandle(void)
 	case 'K': /* EL -- Clear line */
 		switch (csiescseq.arg[0]) {
 		case 0: /* right */
-			tclearregion(term.c.x, term.c.y, term.col-1,
+			tclearregion(term.c.x, term.c.y, term.maxcol-1,
 					term.c.y);
 			break;
 		case 1: /* left */
 			tclearregion(0, term.c.y, term.c.x, term.c.y);
 			break;
 		case 2: /* all */
-			tclearregion(0, term.c.y, term.col-1, term.c.y);
+			tclearregion(0, term.c.y, term.maxcol-1, term.c.y);
 			break;
 		}
 		break;
@@ -2675,8 +2675,14 @@ void
 tresize(int col, int row)
 {
 	int i, j;
-	int minrow = MIN(row, term.row);
-	int mincol = MIN(col, term.col);
+	int tmp = col;
+	int minrow, mincol;
+
+	if (!term.maxcol)
+		term.maxcol = term.col;
+	col = MAX(col, term.maxcol);
+	minrow = MIN(row, term.row);
+	mincol = MIN(col, term.maxcol);
 	int *bp;
 	TCursor c;
 
@@ -2729,17 +2735,18 @@ tresize(int col, int row)
 		term.line[i] = xmalloc(col * sizeof(Glyph));
 		term.alt[i] = xmalloc(col * sizeof(Glyph));
 	}
-	if (col > term.col) {
-		bp = term.tabs + term.col;
+	if (col > term.maxcol) {
+		bp = term.tabs + term.maxcol;
+		memset(bp, 0, sizeof(*term.tabs) * (col - term.maxcol));
 
-		memset(bp, 0, sizeof(*term.tabs) * (col - term.col));
 		while (--bp > term.tabs && !*bp)
 			/* nothing */ ;
 		for (bp += tabspaces; bp < term.tabs + col; bp += tabspaces)
 			*bp = 1;
 	}
 	/* update terminal size */
-	term.col = col;
+	term.col = tmp;
+	term.maxcol = col;
 	term.row = row;
 	/* reset scrolling region */
 	tsetscroll(0, row-1);
