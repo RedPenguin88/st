@@ -69,6 +69,10 @@ static void zoomabs(const Arg *);
 static void zoomreset(const Arg *);
 static void ttysend(const Arg *);
 
+static float clamp(float value, float lower, float upper);
+static void changealpha(const Arg *);
+static void changealphaunfocused(const Arg *arg);
+
 /* config.h for applying patches and the configuration. */
 #include "config.h"
 
@@ -270,6 +274,35 @@ static int focused = 0;
 
 static uint buttons; /* bit field of pressed buttons */
 static int cursorblinks = 0;
+
+float
+clamp(float value, float lower, float upper) {
+	if (value < lower)
+		return lower;
+	if (value > upper)
+		return upper;
+	return value;
+}
+
+void
+changealpha(const Arg *arg)
+{
+	if ((alpha > 0 && arg->f < 0) || (alpha < 1 && arg->f > 0))
+		alpha += arg->f;
+	alpha = clamp(alpha, 0.0, 1.0);
+	xloadcols();
+	redraw();
+}
+
+void
+changealphaunfocused(const Arg *arg)
+{
+	if ((alphaUnfocused > 0 && arg->f < 0) || (alphaUnfocused < 1 && arg->f > 0))
+		alphaUnfocused += arg->f;
+	alphaUnfocused = clamp(alphaUnfocused, 0.0, 1.0);
+	xloadcols();
+	redraw();
+}
 
 void
 clipcopy(const Arg *dummy)
