@@ -36,8 +36,8 @@ clean:
 
 dist: clean
 	mkdir -p st-$(VERSION)
-	cp -R FAQ LEGACY TODO LICENSE Makefile README config.mk\
-		config.def.h st.info st.1 arg.h st.h win.h $(SRC)\
+	cp -R FAQ LEGACY TODO LICENSE Makefile README README.md config.mk\
+		config.def.h st.info st.1 arg.h st.h win.h boxdraw_data.h hb.h $(SRC)\
 		st-$(VERSION)
 	tar -cf - st-$(VERSION) | gzip > st-$(VERSION).tar.gz
 	rm -rf st-$(VERSION)
@@ -50,10 +50,13 @@ install: st
 	sed "s/VERSION/$(VERSION)/g" < st.1 > $(DESTDIR)$(MANPREFIX)/man1/st.1
 	chmod 644 $(DESTDIR)$(MANPREFIX)/man1/st.1
 	tic -sx st.info
+	mkdir -p $(DESTDIR)$(PREFIX)/share/applications
+	cp -n st.desktop $(DESTDIR)$(PREFIX)/share/applications
 	@echo Please see the README file regarding the terminfo entry of st.
 
 uninstall:
 	rm -f $(DESTDIR)$(PREFIX)/bin/st
 	rm -f $(DESTDIR)$(MANPREFIX)/man1/st.1
+	rm -f $(DESTDIR)$(PREFIX)/share/applications/st.desktop
 
 .PHONY: all options clean dist install uninstall
