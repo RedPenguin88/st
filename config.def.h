@@ -141,7 +141,6 @@ static const char *colorname[] = {
 
 	/* more colors can be added after 255 to use with DefaultXX */
 	"#F4DBD6", /* cursor color */
-	"#F4DBD6", /* reverse cursor color */
 	"#24273A", /* default background color */
 	"#CAD3F5", /* default foreground color */
 };
@@ -152,10 +151,10 @@ static const char *colorname[] = {
  * foreground, background, cursor, reverse cursor
  */
 unsigned int defaultbg = 0;
-unsigned int bg = 258, bgUnfocused = 258; 	/* Define custom focused and unfocused background colors here */
-unsigned int defaultfg = 259;
+unsigned int bg = 257, bgUnfocused = 257; 	/* Define custom focused and unfocused background colors here */
+unsigned int defaultfg = 258;
 unsigned int defaultcs = 256;
-static unsigned int defaultrcs = 257;
+static unsigned int defaultrcs = 256;
 
 /*
  * https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h4-Functions-using-CSI-_-ordered-by-the-final-character-lparen-s-rparen:CSI-Ps-SP-q.1D81
