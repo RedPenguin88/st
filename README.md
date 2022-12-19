@@ -16,6 +16,7 @@ preferences &mdash; suckless philosophy be damned.
 - [Wide-Glyph Support](https://github.com/Dreomite/st/commit/e3b821dcb3511d60341dec35ee05a4a0abfef7f2): Workaround for Nerd Font glyphs to not get cut off
 - [Ligatures](https://st.suckless.org/patches/ligatures/): Ligature support via Harfbuzz library
 - [Scrollback](https://st.suckless.org/patches/scrollback/): Scroll back through terminal with `Alt+j / Alt+k` or mouse wheel
+- [Selection colors](https://st.suckless.org/patches/selectioncolors/): Adds *selectionfg* and *selectionbg* to define fore- and background colors when selecting text with the mouse
 - [Undercurl](https://st.suckless.org/patches/undercurl/): Undercurl support for programs which support it
 
 # Dependencies

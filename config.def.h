@@ -143,18 +143,25 @@ static const char *colorname[] = {
 	"#F4DBD6", /* cursor color */
 	"#24273A", /* default background color */
 	"#CAD3F5", /* default foreground color */
+	"#494d64", /* default selection background color */
+	"#24273A", /* default selection foreground color */
 };
 
 
 /*
  * Default colors (colorname index)
- * foreground, background, cursor, reverse cursor
+ * foreground, background, cursor, reverse cursor, selection
  */
 unsigned int defaultbg = 0;
 unsigned int bg = 257, bgUnfocused = 257; 	/* Define custom focused and unfocused background colors here */
 unsigned int defaultfg = 258;
 unsigned int defaultcs = 256;
 static unsigned int defaultrcs = 256;
+unsigned int selectionbg = 259;
+unsigned int selectionfg = 237;
+/* If 0 use selectionfg as foreground in order to have a uniform foreground-color */
+/* Else if 1 keep original foreground-color of each cell => more colors :) */
+static int ignoreselfg = 1;
 
 /*
  * https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h4-Functions-using-CSI-_-ordered-by-the-final-character-lparen-s-rparen:CSI-Ps-SP-q.1D81
